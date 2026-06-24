@@ -5,6 +5,18 @@ background: #f5f7fb;
 color: #333;
 }
 
+a {
+text-decoration: none;
+}
+
+button {
+transition: 0.2s;
+}
+
+button:hover {
+transform: scale(1.05);
+}
+
 /* HERO */
 .hero {
 background: linear-gradient(135deg, #4a90e2, #6a5acd);

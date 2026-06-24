@@ -28,7 +28,7 @@
 
 <h2 id="total" class="total"></h2>
 
-<button class="pay-btn" id="pay-sms">Pay via SMS</button>
+<button class="pay-btn" onclick="window.location.href='sms.html'">Pay via SMS</button>
 
 <script>
 function loadCart() {
@@ -53,13 +53,6 @@ function renderSummary() {
   });
   document.getElementById('total').textContent = 'Total: £' + subtotal.toFixed(2);
 }
-
-document.getElementById('pay-sms').addEventListener('click', () => {
-  // simulate sending SMS/payment link
-  alert('SMS payment link sent (simulation)');
-  localStorage.removeItem('cart');
-  window.location.href = 'success.html';
-});
 
 document.addEventListener('DOMContentLoaded', renderSummary);
 </script>

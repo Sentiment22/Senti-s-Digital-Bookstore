@@ -19,11 +19,7 @@ function addToCart(title, price) {
 }
 
 function viewCart() {
-	const cart = loadCart();
-	if (!cart.length) { alert('Your cart is empty.'); return; }
-	const lines = cart.map(i => `${i.title} × ${i.quantity} — £${(i.price * i.quantity).toFixed(2)}`);
-	const total = cart.reduce((s,i) => s + i.price * i.quantity, 0);
-	alert(lines.join('\n') + `\n\nTotal: £${total.toFixed(2)}`);
+	window.location.href = 'cart.html';
 }
 
 function updateCartBadge() {

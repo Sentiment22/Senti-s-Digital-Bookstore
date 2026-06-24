@@ -1,67 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Senti's Digital Bookstore</title>
-  <link rel="stylesheet" href="styles.css">
+<title>Checkout</title>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<header class="hero">
-  <h1>Senti’s Digital Bookstore 📚</h1>
-  <p>Buy and explore your favorite digital books instantly</p>
-  <button onclick="scrollToBooks()">Browse Books</button>
-</header>
+<h1>Checkout 💳</h1>
 
-<section id="books" class="book-section">
-  <h2>Featured Books</h2>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Checkout</title>
+<link rel="stylesheet" href="style.css">
+</head>
 
-  <div class="book-grid">
+<body>
 
-    <div class="book-card">
-      <h3>Rich Dad Poor Dad</h3>
-      <p>Learn financial freedom principles</p>
-      <span>£5.99</span>
-      <button onclick="addToCart('Rich Dad Poor Dad', 5.99)">Add to Cart</button>
-    </div>
+<h1>Checkout 💳</h1>
 
-    <div class="book-card">
-      <h3>Atomic Habits</h3>
-      <p>Build powerful daily habits</p>
-      <span>£6.99</span>
-      <button class="view-btn" data-title="Atomic Habits" data-desc="Build powerful daily habits" data-price="£6.99">View Book</button>
-    </div>
+<h3>Enter your details</h3>
 
-    <div class="book-card">
-      <h3>The Psychology of Money</h3>
-      <p>Understand how money really works</p>
-      <span>£4.99</span>
-      <button class="view-btn" data-title="The Psychology of Money" data-desc="Understand how money really works" data-price="£4.99">View Book</button>
-    </div>
+<input type="text" placeholder="Your Name"><br><br>
+<input type="text" placeholder="Phone Number"><br><br>
 
-  </div>
-</section>
+<h3>Order Summary</h3>
+<div id="summary"></div>
 
-<div style="text-align:center; margin:18px 0;">
-  <button onclick="viewCart()" style="padding:10px 16px; border-radius:6px; border:none; background:#4a90e2; color:white; cursor:pointer;">Go to Cart</button>
-</div>
+<h2 id="total"></h2>
 
-<!-- Book View Modal -->
-<div id="book-modal" class="modal" aria-hidden="true">
-  <div class="modal-content">
-    <button id="modal-close" class="modal-close" aria-label="Close">&times;</button>
-    <h3 id="modal-title"></h3>
-    <p id="modal-desc"></p>
-    <p id="modal-price" class="modal-price"></p>
-    <div class="modal-actions">
-      <button id="modal-add" class="book-add-btn">Add to Cart</button>
-      <button id="modal-close-2" class="book-close-btn">Close</button>
-    </div>
-  </div>
-</div>
+<button onclick="sendSMS()">
+Pay via SMS
+</button>
 
-<script src="script.js"></script>
+<script>
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+let summary = document.getElementById("summary");
+let total = 0;
+
+cart.forEach(item => {
+let div = document.createElement("div");
+div.innerHTML = item.name + " - £" + item.price;
+summary.appendChild(div);
+total += item.price;
+});
+
+document.getElementById("total").innerText =
+"Total: £" + total.toFixed(2);
+
+function sendSMS() {
+alert("SMS payment link sent (simulation)");
+localStorage.removeItem("cart");
+window.location.href = "success.html";
+}
+</script>
+
 </body>
 </html>

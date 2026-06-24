@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cart — Senti's Digital Bookstore</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { padding: 24px; font-family: Arial, sans-serif; }
+    .cart-header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+    .cart-item { padding:12px 0; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+    .cart-item strong { display:block; margin-top:4px; }
+    .cart-actions { margin-top:20px; display:flex; gap:12px; flex-wrap:wrap; }
+    .cart-btn { padding:12px 16px; border:none; border-radius:6px; cursor:pointer; color:white; }
+    .checkout-btn { background:#4a90e2; }
+    .clear-btn { background:#e74c3c; }
+    .store-btn { background:#7f8c8d; }
+    .empty-state { padding:30px 0; color:#555; }
+  </style>
+</head>
+<body>
+  <h1>Shopping Cart 🛒</h1>
+  <div class="cart-header">
+    <div>
+      <p>Review the items in your cart before checkout.</p>
+    </div>
+    <div>
+      <button class="cart-btn store-btn" onclick="window.location.href='index.html'">Continue Shopping</button>
+    </div>
+  </div>
+
+  <div id="cart-list"></div>
+  <h2 id="cart-total"></h2>
+
+  <div class="cart-actions">
+    <button class="cart-btn checkout-btn" id="checkout-btn">Proceed to Checkout</button>
+    <button class="cart-btn clear-btn" id="clear-btn">Clear Cart</button>
+  </div>
+
+  <script>
+    function loadCart() {
+      try { return JSON.parse(localStorage.getItem('cart')) || []; } catch (e) { return []; }
+    }
+    function saveCart(cart) {
+      try { localStorage.setItem('cart', JSON.stringify(cart)); } catch (e) {}
+    }
+    function formatPrice(value) {
+      return '£' + value.toFixed(2);
+    }
+    function renderCart() {
+      const cart = loadCart();
+      const list = document.getElementById('cart-list');
+      const totalEl = document.getElementById('cart-total');
+      list.innerHTML = '';
+      if (!cart.length) {
+        list.innerHTML = '<div class="empty-state">Your cart is empty. Add books from the store.</div>';
+        totalEl.textContent = '';
+        document.getElementById('checkout-btn').disabled = true;
+        return;
+      }
+      let total = 0;
+      cart.forEach((item, index) => {
+        const qty = item.quantity || 1;
+        const price = parseFloat(item.price) || 0;
+        const itemTotal = price * qty;
+        total += itemTotal;
+        const container = document.createElement('div');
+        container.className = 'cart-item';
+        container.innerHTML = `
+          <div>
+            <strong>${item.title || item.name || 'Book'}</strong>
+            <span>${qty} × ${formatPrice(price)}</span>
+          </div>
+          <div>
+            <span>${formatPrice(itemTotal)}</span>
+          </div>
+        `;
+        list.appendChild(container);
+      });
+      totalEl.textContent = 'Total: ' + formatPrice(total);
+      document.getElementById('checkout-btn').disabled = false;
+    }
+    document.getElementById('checkout-btn').addEventListener('click', () => {
+      window.location.href = 'checkout.html';
+    });
+    document.getElementById('clear-btn').addEventListener('click', () => {
+      saveCart([]);
+      renderCart();
+      alert('Cart cleared.');
+    });
+    document.addEventListener('DOMContentLoaded', renderCart);
+  </script>
+</body>
+</html>

@@ -1,44 +1,80 @@
+// Simple cart stored in localStorage as an array of { title, price, quantity }
+function loadCart() {
+	try {
+		return JSON.parse(localStorage.getItem('cart')) || [];
+	} catch (e) { return []; }
+}
+
+function saveCart(cart) {
+	try { localStorage.setItem('cart', JSON.stringify(cart)); } catch (e) {}
+}
+
+function addToCart(title, price) {
+	const cart = loadCart();
+	const item = cart.find(i => i.title === title);
+	if (item) item.quantity += 1; else cart.push({ title, price, quantity: 1 });
+	saveCart(cart);
+	updateCartBadge();
+	alert(`${title} added to cart.`);
+}
+
+function viewCart() {
+	const cart = loadCart();
+	if (!cart.length) { alert('Your cart is empty.'); return; }
+	const lines = cart.map(i => `${i.title} × ${i.quantity} — £${(i.price * i.quantity).toFixed(2)}`);
+	const total = cart.reduce((s,i) => s + i.price * i.quantity, 0);
+	alert(lines.join('\n') + `\n\nTotal: £${total.toFixed(2)}`);
+}
+
+function updateCartBadge() {
+	const badge = document.getElementById('cart-count');
+	if (!badge) return;
+	const cart = loadCart();
+	const count = cart.reduce((s,i) => s + (i.quantity||0), 0);
+	badge.textContent = count;
+}
+
 function scrollToBooks() {
-	document.getElementById("books").scrollIntoView({ behavior: "smooth" });
+	const el = document.getElementById('books');
+	if (el) el.scrollIntoView({ behavior: 'smooth' });
 }
 
-// Modal and View Book handlers
+// Modal wiring for 'View Book' buttons
 document.addEventListener('DOMContentLoaded', () => {
+	updateCartBadge();
 	const viewButtons = document.querySelectorAll('.view-btn');
-	viewButtons.forEach(btn => btn.addEventListener('click', openModal));
+	viewButtons.forEach(btn => btn.addEventListener('click', (e) => {
+		const t = btn.dataset.title || '';
+		const d = btn.dataset.desc || '';
+		const pText = btn.dataset.price || '';
+		const p = parseFloat(pText.replace(/[^0-9.]/g, '')) || 0;
+		document.getElementById('modal-title').textContent = t;
+		document.getElementById('modal-desc').textContent = d;
+		document.getElementById('modal-price').textContent = `£${p.toFixed(2)}`;
+		const modal = document.getElementById('book-modal');
+		modal.classList.add('open');
+		modal.setAttribute('aria-hidden','false');
+		// store current product on modal-add button dataset
+		const addBtn = document.getElementById('modal-add');
+		addBtn.dataset.title = t;
+		addBtn.dataset.price = p;
+	}));
 
-	document.getElementById('modal-close').addEventListener('click', closeModal);
-	document.getElementById('modal-close-2').addEventListener('click', closeModal);
-	document.getElementById('modal-add').addEventListener('click', () => {
-		const title = document.getElementById('modal-title').textContent;
-		alert(`${title} added to cart (demo).`);
-		closeModal();
+	const closeA = document.getElementById('modal-close');
+	const closeB = document.getElementById('modal-close-2');
+	[closeA, closeB].forEach(b => b && b.addEventListener('click', () => {
+		const modal = document.getElementById('book-modal'); modal.classList.remove('open'); modal.setAttribute('aria-hidden','true');
+	}));
+
+	document.getElementById('modal-add').addEventListener('click', (e) => {
+		const btn = e.currentTarget;
+		const title = btn.dataset.title || '';
+		const price = parseFloat(btn.dataset.price) || 0;
+		if (title) addToCart(title, price);
+		const modal = document.getElementById('book-modal'); modal.classList.remove('open'); modal.setAttribute('aria-hidden','true');
 	});
 
-	// Close modal on outside click or Escape
-	document.getElementById('book-modal').addEventListener('click', (e) => {
-		if (e.target.id === 'book-modal') closeModal();
-	});
-	window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+	// close on background click
+	const modalWrap = document.getElementById('book-modal');
+	if (modalWrap) modalWrap.addEventListener('click', (ev) => { if (ev.target === modalWrap) { modalWrap.classList.remove('open'); modalWrap.setAttribute('aria-hidden','true'); } });
 });
-
-function openModal(e) {
-	const btn = e.currentTarget;
-	const title = btn.dataset.title || '';
-	const desc = btn.dataset.desc || '';
-	const price = btn.dataset.price || '';
-
-	document.getElementById('modal-title').textContent = title;
-	document.getElementById('modal-desc').textContent = desc;
-	document.getElementById('modal-price').textContent = price;
-
-	const modal = document.getElementById('book-modal');
-	modal.classList.add('open');
-	modal.setAttribute('aria-hidden', 'false');
-}
-
-function closeModal() {
-	const modal = document.getElementById('book-modal');
-	modal.classList.remove('open');
-	modal.setAttribute('aria-hidden', 'true');
-}

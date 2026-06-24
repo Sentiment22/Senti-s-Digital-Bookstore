@@ -1,19 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Checkout</title>
-<link rel="stylesheet" href="style.css">
-</head>
-
-<body>
-
-<h1>Checkout 💳</h1>
-
-<!DOCTYPE html>
-<html>
-<head>
-<title>Checkout</title>
-<link rel="stylesheet" href="style.css">
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>Checkout — Senti's Digital Bookstore</title>
+	<link rel="stylesheet" href="styles.css">
+	<style>
+		body { padding: 24px; font-family: Arial, sans-serif; }
+		input { padding:8px; width:100%; max-width:360px; }
+		#summary { margin: 12px 0 18px 0; }
+		.summary-item { padding:8px 0; border-bottom:1px solid #eee; }
+		.total { font-weight:700; margin-top:12px; }
+		.pay-btn { background:#27ae60; color:white; border:none; padding:12px 16px; border-radius:6px; cursor:pointer; }
+	</style>
 </head>
 
 <body>
@@ -21,40 +20,48 @@
 <h1>Checkout 💳</h1>
 
 <h3>Enter your details</h3>
-
-<input type="text" placeholder="Your Name"><br><br>
-<input type="text" placeholder="Phone Number"><br><br>
+<input id="cust-name" type="text" placeholder="Your Name"><br><br>
+<input id="cust-phone" type="text" placeholder="Phone Number"><br><br>
 
 <h3>Order Summary</h3>
-<div id="summary"></div>
+<div id="summary">(loading...)</div>
 
-<h2 id="total"></h2>
+<h2 id="total" class="total"></h2>
 
-<button onclick="sendSMS()">
-Pay via SMS
-</button>
+<button class="pay-btn" id="pay-sms">Pay via SMS</button>
 
 <script>
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
+function loadCart() {
+	try { return JSON.parse(localStorage.getItem('cart')) || []; } catch(e){ return []; }
+}
 
-let summary = document.getElementById("summary");
-let total = 0;
+function renderSummary() {
+	const cart = loadCart();
+	const summaryEl = document.getElementById('summary');
+	summaryEl.innerHTML = '';
+	if (!cart.length) { summaryEl.textContent = 'Your cart is empty.'; document.getElementById('total').textContent = ''; return; }
+	let subtotal = 0;
+	cart.forEach(item => {
+		const qty = item.quantity || 1;
+		const title = item.title || item.name || 'Item';
+		const price = parseFloat(item.price) || 0;
+		const line = document.createElement('div');
+		line.className = 'summary-item';
+		line.textContent = `${title} × ${qty} — £${(price * qty).toFixed(2)}`;
+		summaryEl.appendChild(line);
+		subtotal += price * qty;
+	});
+	document.getElementById('total').textContent = 'Total: £' + subtotal.toFixed(2);
+}
 
-cart.forEach(item => {
-let div = document.createElement("div");
-div.innerHTML = item.name + " - £" + item.price;
-summary.appendChild(div);
-total += item.price;
+document.getElementById('pay-sms').addEventListener('click', () => {
+	// simulate sending SMS/payment link
+	alert('SMS payment link sent (simulation)');
+	localStorage.removeItem('cart');
+	window.location.href = 'success.html';
 });
 
-document.getElementById("total").innerText =
-"Total: £" + total.toFixed(2);
-
-function sendSMS() {
-alert("SMS payment link sent (simulation)");
-localStorage.removeItem("cart");
-window.location.href = "success.html";
-}
+document.addEventListener('DOMContentLoaded', renderSummary);
 </script>
 
 </body>
